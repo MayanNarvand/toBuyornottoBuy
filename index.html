@@ -12,35 +12,39 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
+
     .chatbox {
       background: #fff;
       width: 400px;
       border-radius: 18px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
       padding: 25px;
-    }
-    h2 {
       text-align: center;
-      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    h2 {
       color: #444;
+      margin-bottom: 20px;
     }
-    .question {
-      margin-bottom: 18px;
-    }
+
     label {
       display: block;
-      margin-bottom: 6px;
       font-weight: bold;
+      margin-bottom: 10px;
     }
+
     input, select, button {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      margin-bottom: 12px;
       font-size: 14px;
+      margin-bottom: 12px;
     }
+
     button {
       background-color: #3c79e6;
       color: white;
@@ -48,17 +52,31 @@
       border: none;
       transition: 0.2s;
     }
+
     button:hover {
       background-color: #2f63c3;
     }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
     .result {
-      text-align: center;
-      font-size: 15px;
       margin-top: 20px;
-      padding: 15px;
-      border-radius: 10px;
       background: #f8fafc;
       border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 15px;
     }
   </style>
 </head>
@@ -67,76 +85,90 @@
 <div class="chatbox">
   <h2>To Buy or Not To Buy 🧠</h2>
 
-  <div class="question">
+  <!-- Step 1 -->
+  <div class="step active" id="step1">
     <label>لینک خرید محصول رو وارد کن:</label>
     <input id="productLink" type="text" placeholder="مثلاً https://www.digikala.com/...">
+    <button onclick="nextStep(2)">ادامه بده 🚀</button>
   </div>
 
-  <button onclick="extractProduct()">ادامه بده 🚀</button>
+  <!-- Step 2 -->
+  <div class="step" id="step2">
+    <label id="qTitle1"></label>
+    <select id="q1">
+      <option value="">-- انتخاب کن --</option>
+      <option value="recent">کمتر از یک ماه</option>
+      <option value="mid">بین ۱ تا ۶ ماه</option>
+      <option value="long">بیشتر از ۶ ماه</option>
+    </select>
+    <button onclick="nextStep(3)">ادامه</button>
+  </div>
 
-  <div id="questions" style="display:none;">
-    <div class="question">
-      <label id="qTitle1"></label>
-      <select id="q1">
-        <option value="">-- انتخاب کن --</option>
-        <option value="recent">کمتر از یک ماه</option>
-        <option value="mid">بین ۱ تا ۶ ماه</option>
-        <option value="long">بیشتر از ۶ ماه</option>
-      </select>
-    </div>
+  <!-- Step 3 -->
+  <div class="step" id="step3">
+    <label>اگر اینو نخری، چه اتفاقی می‌افته؟</label>
+    <select id="q2">
+      <option value="">-- انتخاب کن --</option>
+      <option value="nothing">هیچی، فرقی نداره</option>
+      <option value="sad">یه کم ناراحت می‌شم</option>
+      <option value="need">واقعاً لازمه</option>
+    </select>
+    <button onclick="nextStep(4)">ادامه</button>
+  </div>
 
-    <div class="question">
-      <label>اگر اینو نخری، چه اتفاقی می‌افته؟</label>
-      <select id="q2">
-        <option value="">-- انتخاب کن --</option>
-        <option value="nothing">هیچی، فرقی نداره</option>
-        <option value="sad">یه کم ناراحت می‌شم</option>
-        <option value="need">واقعاً لازمه</option>
-      </select>
-    </div>
-
-    <div class="question">
-      <label>آیا بودجه‌ات برای خریدش مناسبه؟</label>
-      <select id="q3">
-        <option value="">-- انتخاب کن --</option>
-        <option value="tight">نه، باید از پس‌انداز بزنم</option>
-        <option value="ok">بله، ولی فشرده می‌شم</option>
-        <option value="fine">بله، بدون مشکل</option>
-      </select>
-    </div>
-
+  <!-- Step 4 -->
+  <div class="step" id="step4">
+    <label>آیا بودجه‌ات برای خریدش مناسبه؟</label>
+    <select id="q3">
+      <option value="">-- انتخاب کن --</option>
+      <option value="tight">نه، باید از پس‌انداز بزنم</option>
+      <option value="ok">بله، ولی فشرده می‌شم</option>
+      <option value="fine">بله، بدون مشکل</option>
+    </select>
     <button onclick="analyze()">تحلیل کن 🧩</button>
+  </div>
+
+  <!-- Result -->
+  <div class="step" id="resultStep">
     <div id="result" class="result"></div>
+    <button onclick="restart()">شروع دوباره 🔁</button>
   </div>
 </div>
 
 <script>
   let productName = "";
 
-  function extractProduct() {
-    const link = document.getElementById('productLink').value.trim();
-    if (!link) {
-      alert("لطفاً لینک محصول رو وارد کن.");
-      return;
+  function nextStep(step) {
+    const current = document.querySelector(".step.active");
+    current.classList.remove("active");
+
+    // اگر قدم دومه، اسم محصول رو از لینک استخراج کن
+    if (step === 2) {
+      const link = document.getElementById('productLink').value.trim();
+      if (!link) {
+        alert("لطفاً لینک محصول رو وارد کن.");
+        current.classList.add("active");
+        return;
+      }
+      try {
+        const parts = link.split('/');
+        const lastPart = parts[parts.length - 1] || parts[parts.length - 2];
+        productName = decodeURIComponent(lastPart)
+          .replace(/[-_]/g, ' ')
+          .replace(/\?.*/, '')
+          .replace(/\d+/g, '')
+          .trim();
+        if (!productName) productName = "این محصول";
+        document.getElementById('qTitle1').textContent =
+          `آخرین باری که چیزی شبیه ${productName} خریدی کی بوده؟`;
+      } catch {
+        alert("لینک معتبر نیست!");
+        current.classList.add("active");
+        return;
+      }
     }
 
-    // استخراج نام تقریبی از لینک
-    try {
-      const parts = link.split('/');
-      const lastPart = parts[parts.length - 1] || parts[parts.length - 2];
-      productName = decodeURIComponent(lastPart)
-        .replace(/[-_]/g, ' ')
-        .replace(/\?.*/, '')
-        .replace(/\d+/g, '')
-        .trim();
-
-      if (!productName) productName = "این محصول";
-
-      document.getElementById('qTitle1').textContent = `آخرین باری که چیزی شبیه ${productName} خریدی کی بوده؟`;
-      document.getElementById('questions').style.display = 'block';
-    } catch (e) {
-      alert("لینک معتبر نیست!");
-    }
+    document.getElementById(`step${step}`).classList.add("active");
   }
 
   function analyze() {
@@ -146,7 +178,7 @@
     const result = document.getElementById('result');
 
     if (!q1 || !q2 || !q3) {
-      result.innerHTML = "به همه سوال‌ها جواب بده 🌱";
+      alert("به همه سؤال‌ها جواب بده 🌱");
       return;
     }
 
@@ -161,12 +193,24 @@
     if (score >= 4) {
       message = `به نظر می‌رسه خرید <b>${productName}</b> فقط یه هیجان لحظه‌ایه 😅<br>پولت رو نگه دار، خودت بعداً خوشحال‌تر خواهی بود!`;
     } else if (score >= 2) {
-      message = `شاید واقعا به <b>${productName}</b> نیاز داری، ولی قبل از خرید یه روز بهش فکر کن ⏳`;
+      message = `شاید واقعاً به <b>${productName}</b> نیاز داری، ولی قبل از خرید یه روز بهش فکر کن ⏳`;
     } else {
       message = `خوبه، به نظر می‌رسه تصمیم برای <b>${productName}</b> منطقیه — فقط مطمئنی راه ارزون‌تری نیست؟ 😉`;
     }
 
     result.innerHTML = message;
+    document.querySelector(".step.active").classList.remove("active");
+    document.getElementById("resultStep").classList.add("active");
+  }
+
+  function restart() {
+    document.querySelector(".step.active").classList.remove("active");
+    document.getElementById("step1").classList.add("active");
+    document.getElementById("productLink").value = "";
+    document.getElementById("q1").value = "";
+    document.getElementById("q2").value = "";
+    document.getElementById("q3").value = "";
+    document.getElementById("result").innerHTML = "";
   }
 </script>
 
