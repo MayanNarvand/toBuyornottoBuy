@@ -17,7 +17,7 @@
 
     .chatbox {
       background: #fff;
-      width: 400px;
+      width: 420px;
       border-radius: 18px;
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
       padding: 25px;
@@ -25,51 +25,37 @@
       transition: all 0.3s ease;
     }
 
-    h2 {
-      color: #444;
-      margin-bottom: 20px;
+    h2 { color: #444; margin-bottom: 10px; }
+    .subtitle { color: #777; font-size: 13px; margin-bottom: 20px; }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background-color: #3c79e6;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+      margin-top: 10px;
     }
 
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
+    button:hover { background-color: #2f63c3; }
 
-    input, select, button {
+    select {
       width: 100%;
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      margin-top: 10px;
       font-size: 14px;
-      margin-bottom: 12px;
     }
 
-    button {
-      background-color: #3c79e6;
-      color: white;
-      cursor: pointer;
-      border: none;
-      transition: 0.2s;
-    }
+    .step { display: none; animation: fadeIn 0.4s ease; }
+    .step.active { display: block; }
 
-    button:hover {
-      background-color: #2f63c3;
-    }
-
-    .step {
-      display: none;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .step.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
 
     .result {
       margin-top: 20px;
@@ -77,6 +63,7 @@
       border: 1px solid #eee;
       border-radius: 10px;
       padding: 15px;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -84,137 +71,157 @@
 
 <div class="chatbox">
   <h2>To Buy or Not To Buy 🧠</h2>
+  <div class="subtitle">ذهن در لحظه خرید</div>
 
-  <!-- Step 1 -->
+  <!-- مرحله ۱: نمودار -->
   <div class="step active" id="step1">
-    <label>اسم محصول رو وارد کن:</label>
-    <input id="productLink" type="text" placeholder="مثلاً جوراب">
-    <button onclick="nextStep(2)">ادامه بده 🚀</button>
+    <canvas id="buyMindChart" width="300" height="300"></canvas>
+    <p style="font-size:13px;color:#555;line-height:1.6">
+      تصمیم خرید معمولاً از دل این چهار نیرو بیرون می‌آید.<br>
+      هدف ما کمک به این است که بخش <b>نیاز واقعی</b> را قوی‌تر کنی.
+    </p>
+    <button onclick="nextStep(2)">شروع گفت‌وگو 🚀</button>
   </div>
 
-  <!-- Step 2 -->
+  <!-- مرحله ۲ تا ۶: پرسش‌ها -->
   <div class="step" id="step2">
-    <label id="qTitle1"></label>
+    <label>۱. وقتی به این خرید فکر می‌کنی، بیشتر حس هیجان داری یا نیاز؟</label>
     <select id="q1">
       <option value="">-- انتخاب کن --</option>
-      <option value="recent">کمتر از یک ماه</option>
-      <option value="mid">بین ۱ تا ۶ ماه</option>
-      <option value="long">بیشتر از ۶ ماه</option>
+      <option value="excitement">هیجان</option>
+      <option value="need">نیاز واقعی</option>
     </select>
-    <button onclick="nextStep(3)">ادامه</button>
+    <button onclick="nextStep(3)">ادامه ➡️</button>
   </div>
 
-  <!-- Step 3 -->
   <div class="step" id="step3">
-    <label>اگر اینو نخری، چه اتفاقی می‌افته؟</label>
+    <label>۲. اگه امروز نخری، حس می‌کنی یه فرصت خاص رو از دست می‌دی؟</label>
     <select id="q2">
       <option value="">-- انتخاب کن --</option>
-      <option value="nothing">هیچی، فرقی نداره</option>
-      <option value="sad">یه کم ناراحت می‌شم</option>
-      <option value="need">واقعاً لازمه</option>
+      <option value="yes">بله، از دست می‌ره!</option>
+      <option value="no">نه، همیشه می‌تونم بعداً بخرم</option>
     </select>
-    <button onclick="nextStep(4)">ادامه</button>
+    <button onclick="nextStep(4)">ادامه ➡️</button>
   </div>
 
-  <!-- Step 4 -->
   <div class="step" id="step4">
-    <label>آیا بودجه‌ات برای خریدش مناسبه؟</label>
+    <label>۳. بعد از خرید، معمولاً از چیزهایی شبیه این چقدر استفاده می‌کنی؟</label>
     <select id="q3">
       <option value="">-- انتخاب کن --</option>
-      <option value="tight">نه، باید از پس‌انداز بزنم</option>
-      <option value="ok">بله، ولی فشرده می‌شم</option>
-      <option value="fine">بله، بدون مشکل</option>
+      <option value="rare">کم یا فقط اولش</option>
+      <option value="medium">گاهی اوقات</option>
+      <option value="often">زیاد و مرتب</option>
+    </select>
+    <button onclick="nextStep(5)">ادامه ➡️</button>
+  </div>
+
+  <div class="step" id="step5">
+    <label>۴. آیا برای خریدش باید از بودجه یا پس‌انداز بزنی؟</label>
+    <select id="q4">
+      <option value="">-- انتخاب کن --</option>
+      <option value="tight">بله، باید صرف‌نظر کنم</option>
+      <option value="ok">یه کم فشرده می‌شم</option>
+      <option value="fine">نه، به‌راحتی می‌خرم</option>
+    </select>
+    <button onclick="nextStep(6)">ادامه ➡️</button>
+  </div>
+
+  <div class="step" id="step6">
+    <label>۵. اگه این خرید رو تا فردا عقب بندازی، حس الانیت عوض می‌شه؟</label>
+    <select id="q5">
+      <option value="">-- انتخاب کن --</option>
+      <option value="yes">احتمالاً کمتر می‌خوامش</option>
+      <option value="no">نه، هنوز می‌خوامش</option>
     </select>
     <button onclick="analyze()">تحلیل کن 🧩</button>
   </div>
 
-  <!-- Result -->
-  <div class="step" id="resultStep">
+  <!-- نتیجه -->
+  <div class="step" id="step7">
     <div id="result" class="result"></div>
     <button onclick="restart()">شروع دوباره 🔁</button>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
 <script>
-  let productName = "";
+  // رسم نمودار با درصد عددی
+  const ctx = document.getElementById('buyMindChart');
+  const chart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['هیجان لحظه‌ای', 'ترس از دست دادن (FOMO)', 'میل به پاداش فوری', 'نیاز واقعی'],
+      datasets: [{
+        data: [40, 30, 20, 10],
+        backgroundColor: ['#ff6b6b', '#feca57', '#54a0ff', '#1dd1a1'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      animation: { animateRotate: true, duration: 2000 },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { font: { family: "Vazirmatn" } }
+        },
+        datalabels: {
+          color: '#fff',
+          formatter: (value) => value + '%',
+          font: { weight: 'bold', size: 14 }
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
 
   function nextStep(step) {
-    const current = document.querySelector(".step.active");
-    current.classList.remove("active");
-
-    // اگر قدم دومه، اسم محصول رو از لینک استخراج کن
-    if (step === 2) {
-      const link = document.getElementById('productLink').value.trim();
-      if (!link) {
-        alert("لطفاً لینک محصول رو وارد کن.");
-        current.classList.add("active");
-        return;
-      }
-      try {
-        const parts = link.split('/');
-        const lastPart = parts[parts.length - 1] || parts[parts.length - 2];
-        productName = decodeURIComponent(lastPart)
-          .replace(/[-_]/g, ' ')
-          .replace(/\?.*/, '')
-          .replace(/\d+/g, '')
-          .trim();
-        if (!productName) productName = "این محصول";
-        document.getElementById('qTitle1').textContent =
-          `آخرین باری که چیزی شبیه ${productName} خریدی کی بوده؟`;
-      } catch {
-        alert("لینک معتبر نیست!");
-        current.classList.add("active");
-        return;
-      }
+    const current = document.querySelector('.step.active');
+    const selects = current.querySelectorAll('select');
+    if (selects.length && !selects[0].value) {
+      alert("لطفاً پاسخ بده 🌱");
+      return;
     }
-
-    document.getElementById(`step${step}`).classList.add("active");
+    current.classList.remove('active');
+    document.getElementById('step' + step).classList.add('active');
   }
 
   function analyze() {
     const q1 = document.getElementById('q1').value;
     const q2 = document.getElementById('q2').value;
     const q3 = document.getElementById('q3').value;
-    const result = document.getElementById('result');
-
-    if (!q1 || !q2 || !q3) {
-      alert("به همه سؤال‌ها جواب بده 🌱");
-      return;
-    }
+    const q4 = document.getElementById('q4').value;
+    const q5 = document.getElementById('q5').value;
+    if (!q1 || !q2 || !q3 || !q4 || !q5) { alert("به همه سوال‌ها جواب بده 🌱"); return; }
 
     let score = 0;
-    if (q1 === "recent") score += 2;
-    if (q2 === "nothing") score += 2;
-    if (q2 === "sad") score += 1;
-    if (q3 === "tight") score += 2;
-    if (q3 === "ok") score += 1;
+    if (q1 === "excitement") score += 2;
+    if (q2 === "yes") score += 1;
+    if (q3 === "rare") score += 1;
+    if (q4 === "tight") score += 2;
+    if (q5 === "yes") score += 1;
 
     let message = "";
-    if (score >= 4) {
-      message = `به نظر می‌رسه خرید <b>${productName}</b> فقط یه هیجان لحظه‌ایه 😅<br>پولت رو نگه دار، خودت بعداً خوشحال‌تر خواهی بود!`;
-    } else if (score >= 2) {
-      message = `شاید واقعاً به <b>${productName}</b> نیاز داری، ولی قبل از خرید یه روز بهش فکر کن ⏳`;
+    if (score >= 5) {
+      message = "به نظر می‌رسه تصمیم خریدت بیشتر از روی هیجان و ترس از دست دادنه 😅<br>بهتره خرید رو ۲۴ ساعت عقب بندازی تا ذهنت آروم‌تر تصمیم بگیره.";
+    } else if (score >= 3) {
+      message = "تصمیمت در مرز بین نیاز و میل لحظه‌ایه — یه بازنگری کوتاه می‌تونه مفید باشه.";
     } else {
-      message = `خوبه، به نظر می‌رسه تصمیم برای <b>${productName}</b> منطقیه — فقط مطمئنی راه ارزون‌تری نیست؟ 😉`;
+      message = "تصمیمت منطقی و متعادل به نظر می‌رسه 👌<br>اگر هنوز برات مفیده، خریدش مانعی نداره.";
     }
 
-    result.innerHTML = message;
-    document.querySelector(".step.active").classList.remove("active");
-    document.getElementById("resultStep").classList.add("active");
+    document.querySelector('.step.active').classList.remove('active');
+    document.getElementById('result').innerHTML = message;
+    document.getElementById('step7').classList.add('active');
   }
 
   function restart() {
-    document.querySelector(".step.active").classList.remove("active");
-    document.getElementById("step1").classList.add("active");
-    document.getElementById("productLink").value = "";
-    document.getElementById("q1").value = "";
-    document.getElementById("q2").value = "";
-    document.getElementById("q3").value = "";
-    document.getElementById("result").innerHTML = "";
+    document.querySelector('.step.active').classList.remove('active');
+    document.getElementById('step1').classList.add('active');
+    document.querySelectorAll('select').forEach(s => s.value = "");
+    document.getElementById('result').innerHTML = "";
   }
 </script>
 
 </body>
 </html>
-
-
